@@ -12,6 +12,10 @@ Example Configuration File
                     "Calculations",
                     "Calculations.Core"
                 ],
+                "assemblyinfo": [
+                    "AssemblyInfo.cs",
+                    "SharedAssemblyInfo.cs"
+                ],
                 "history": [
                     {
                         "version": "1.1.0",

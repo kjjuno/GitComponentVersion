@@ -15,6 +15,7 @@ GitComponentVersion is a tool to help you achieve *Semantic Versioning* for mult
    :caption: Contents:
 
    installation
+   how
    usage/usage
    configuration/configuration
 
