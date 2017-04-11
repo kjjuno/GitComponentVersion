@@ -14,6 +14,7 @@ GitComponentVersion is a tool to help you achieve *Semantic Versioning* for mult
    :maxdepth: 2
    :caption: Contents:
 
+   installation
    usage/usage
    configuration/configuration
 
