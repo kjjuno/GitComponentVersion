@@ -6,11 +6,17 @@ TODO: Detail the process for determining the version of a component
 GitComponentVersion uses a combination of a ``GitComponentVersion.json`` file at the root of your repository,
 and the git history to determine the version for multiple components within a single repository.
 
-Unlike tools like GitVersion, GitComponentVersion cannot rely completely on branches, tags, and merge commits
-to determine what a component version is. Because of this there is a slight tradeoff    
-
 A Short Example
 ---------------
+
+If you have never configured your repository for use with GitComponentVersion you will want to run the following command at
+root of your repository
+
+.. code-block:: text
+
+    > gcv init
+
+This will assist you to set up your initial GitComponentVersion.json file.
 
 The following ``GitComponentVersion.json`` file configures a repository with 2 different components (shipping, and billing).
 Each of these components has 2 directories, for a total of 4 nuget assemblies that each produce their own nuget package.
@@ -23,6 +29,7 @@ There are no history elements in the config file, meaning that there has never b
             {
                 "name": "shipping",
                 "next": "1.0.0",
+                "tag": "alpha",
                 "dirs": [
                     "shipping.core",
                     "shipping.calculations"
@@ -31,6 +38,7 @@ There are no history elements in the config file, meaning that there has never b
             {
                 "name": "billing",
                 "next": "1.0.0",
+                "tag": "beta",
                 "dirs": [
                     "billing.core",
                     "billing.useraccounts"
@@ -47,11 +55,11 @@ The following command will display the ``NuGetVersion`` for each component
     [
         {
             "Name": "shipping",
-            "NuGetVersionV2":"1.0.0-alpha0169",
+            "NuGetVersion":"1.0.0-alpha0169",
         },
         {
             "Name": "billing"
-            "NuGetVersionV2":"1.0.0-alpha0077",
+            "NuGetVersion":"1.0.0-beta0077",
         }
     ]
 
@@ -70,6 +78,7 @@ The following things just happened.
    In other words, the current commit has now been tagged with ``shiping_v1.0.0``, and ``billing_v1.0.0``
 2. A new release element has been added into each components history section
 3. The ``next`` variable has been bumped to the next minor version for each released component.
+4. The ``tag`` variable has been set to ``alpha``
 
 The config file now looks like this:
 
@@ -80,6 +89,7 @@ The config file now looks like this:
             {
                 "name": "shipping",
                 "next": "1.1.0",
+                "tag": "alpha",
                 "dirs": [
                     "shipping.core",
                     "shipping.calculations"
@@ -94,6 +104,7 @@ The config file now looks like this:
             {
                 "name": "billing",
                 "next": "1.1.0",
+                "tag": "alpha",
                 "dirs": [
                     "billing.core",
                     "billing.useraccounts"

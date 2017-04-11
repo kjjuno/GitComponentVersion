@@ -8,6 +8,7 @@ Example Configuration File
             {
                 "name": "calculations",
                 "next": "2.0.0",
+                "tag": "alpha",
                 "dirs": [
                     "Calculations",
                     "Calculations.Core"
@@ -32,6 +33,7 @@ Example Configuration File
             {
                 "name": "billing",
                 "next": "1.0.0",
+                "tag": "beta"
                 "dirs": [
                     "Billing.Core",
                     "Billing.Customer"
