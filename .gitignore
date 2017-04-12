@@ -3,3 +3,4 @@ docs/build/
 bin/
 obj/
 packages/
+*.user

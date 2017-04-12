@@ -1,4 +1,6 @@
-﻿using Microsoft.Practices.Unity;
+﻿using System.IO.Abstractions;
+using GitComponentVersion.Busi;
+using Microsoft.Practices.Unity;
 
 namespace GitComponentVersion
 {
@@ -13,7 +15,15 @@ namespace GitComponentVersion
         /// <param name="container">The <see cref="UnityContainer"/> to use for object mappings.</param>
         public static void RegisterTypes(UnityContainer container)
         {
-            
+            // Busi
+            container
+                .RegisterType<IConsole, ConsoleWrapper>()
+                .RegisterType<IGitComponentVersionFileFactory, GitComponentVersionFileFactory>()
+                .RegisterType<IUiStrings, UiStrings>();
+
+            // External
+            container
+                .RegisterType<IFileSystem, FileSystem>();
         }
     }
 }
