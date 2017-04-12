@@ -1,1 +1,5 @@
 docs/build/
+.vs/
+bin/
+obj/
+packages/
