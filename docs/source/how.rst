@@ -1,8 +1,6 @@
 How it Works
 ============
 
-TODO: Detail the process for determining the version of a component
-
 GitComponentVersion uses a combination of a ``GitComponentVersion.json`` file at the root of your repository,
 and the git history to determine the version for multiple components within a single repository.
 
