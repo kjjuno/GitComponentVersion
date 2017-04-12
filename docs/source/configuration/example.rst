@@ -1,4 +1,4 @@
-,Example Configuration File
+Example Configuration File
 ==========================
 
 .. code-block:: json
