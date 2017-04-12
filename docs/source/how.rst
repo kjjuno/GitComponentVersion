@@ -1,8 +1,6 @@
 How it Works
 ============
 
-TODO: Detail the process for determining the version of a component
-
 GitComponentVersion uses a combination of a ``GitComponentVersion.json`` file at the root of your repository,
 and the git history to determine the version for multiple components within a single repository.
 
@@ -75,7 +73,7 @@ However, it is not important to GitComponentVersion what workflow you use. From 
 The following things just happened.
 
 1. Each changed component now has a new tag in the format ``{name}_v{next}``
-   In other words, the current commit has now been tagged with ``shiping_v1.0.0``, and ``billing_v1.0.0``
+   In other words, the current commit has now been tagged with ``shipping_v1.0.0``, and ``billing_v1.0.0``
 2. A new release element has been added into each components history section
 3. The ``next`` variable has been bumped to the next minor version for each released component.
 4. The ``tag`` variable has been set to ``alpha``
@@ -119,7 +117,7 @@ The config file now looks like this:
         ]
     }
 
-The change to GitComponentVersion.json should be committed, and the changes should be pushed to the remote, as well as pushing the new tags
+**It is recommended that the change to GitComponentVersion.json should be committed, and the changes should be pushed to the remote, as well as pushing the new tags**
 
 .. code-block:: text
 
