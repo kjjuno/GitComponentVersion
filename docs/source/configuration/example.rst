@@ -1,4 +1,4 @@
-Example Configuration File
+,Example Configuration File
 ==========================
 
 .. code-block:: json
@@ -33,7 +33,7 @@ Example Configuration File
             {
                 "name": "billing",
                 "next": "1.0.0",
-                "tag": "beta"
+                "tag": "beta",
                 "dirs": [
                     "Billing.Core",
                     "Billing.Customer"
