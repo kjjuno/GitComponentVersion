@@ -123,6 +123,12 @@
   <data name="COMPONENTS_SO_FAR" xml:space="preserve">
     <value>These are your components so far.</value>
   </data>
+  <data name="DONE_WITH_SUGGESTED_DIRECTORIES" xml:space="preserve">
+    <value>Those are all the directories that look like components.</value>
+  </data>
+  <data name="ENTER_COMPONENT_NAME" xml:space="preserve">
+    <value>Enter the name of a component</value>
+  </data>
   <data name="INVALID_COMPONENT" xml:space="preserve">
     <value>Invalid Component!</value>
   </data>
@@ -149,9 +155,6 @@
   </data>
   <data name="RET_UNKNOWN_ERROR" xml:space="preserve">
     <value>Unknown Error</value>
-  </data>
-  <data name="WHAT_IS_THE_COMPONENT_NAME" xml:space="preserve">
-    <value>What is the name of this component?</value>
   </data>
   <data name="WHAT_IS_THE_COMPONENT_PRE_RELEASE_TAG" xml:space="preserve">
     <value>What is the pre-release tag for this component?</value>

@@ -79,6 +79,24 @@ namespace GitComponentVersion.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Those are all the directories that look like components..
+        /// </summary>
+        internal static string DONE_WITH_SUGGESTED_DIRECTORIES {
+            get {
+                return ResourceManager.GetString("DONE_WITH_SUGGESTED_DIRECTORIES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the name of a component.
+        /// </summary>
+        internal static string ENTER_COMPONENT_NAME {
+            get {
+                return ResourceManager.GetString("ENTER_COMPONENT_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid Component!.
         /// </summary>
         internal static string INVALID_COMPONENT {
@@ -156,15 +174,6 @@ namespace GitComponentVersion.Resources {
         internal static string RET_UNKNOWN_ERROR {
             get {
                 return ResourceManager.GetString("RET_UNKNOWN_ERROR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to What is the name of this component?.
-        /// </summary>
-        internal static string WHAT_IS_THE_COMPONENT_NAME {
-            get {
-                return ResourceManager.GetString("WHAT_IS_THE_COMPONENT_NAME", resourceCulture);
             }
         }
         

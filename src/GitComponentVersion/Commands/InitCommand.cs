@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
@@ -68,12 +69,109 @@ namespace GitComponentVersion.Commands
                 _console.WriteLine(strings.YOU_CAN_ADD_MORE);
             }
 
-            while(true)
+            AddSuggestedDirectories(config, dir);
+
+            _console.WriteLine(strings.DONE_WITH_SUGGESTED_DIRECTORIES);
+            _console.WriteLine();
+            _console.WriteLine(strings.YOU_CAN_ADD_MORE);
+
+            AddAdditionalComponents(config, dir);
+
+            if (!config.Components.Any())
+            {
+                _console.WriteLine(strings.OK_GOOD_BYE);
+                return ReturnCode.Success;
+            }
+
+            AssignProjectFoldersToComponents(config, dir);
+
+            var path = _fileSystem.Path.Combine(dir, "GitComponentVersion.json");
+
+            _fileSystem.File.WriteAllText(path, config.ToString());
+
+            _console.WriteLine();
+            _console.WriteLine(strings.YOUR_CHANGES_WERE_WRITTEN_TO, path);
+
+            return ReturnCode.Success;
+        }
+
+        private void AssignProjectFoldersToComponents(GitComponentVersionFile config, string dir)
+        {
+            _console.WriteLine(strings.OK_NOW_ASSIGN_FOLDERS_TO_COMPONENTS);
+            _console.WriteLine(strings.PRESS_ENTER_TO_FINISH);
+            _console.WriteLine();
+
+            var uri = new Uri(dir + "/");
+
+            var dirInfo = _fileSystem.DirectoryInfo.FromDirectoryName(dir);
+            var query =
+                from d in dirInfo.GetDirectories("*", SearchOption.AllDirectories)
+                let path = new Uri(d.Parent.FullName + "/") 
+                let relPath = uri.MakeRelativeUri(path).ToString().TrimEnd('/')
+                where d.GetFiles("*.csproj").Any() &&
+                      !config.Components.Any(c => c.Directories.Contains(relPath))
+                select d;
+
+            foreach (var directory in query)
+            {
+                if (directory.Name == ".git")
+                {
+                    continue;
+                }
+
+                var componentName = (
+                    from c in config.Components
+                    where c.Directories.Contains(directory.Name)
+                    select c.Name).FirstOrDefault() ?? string.Empty;
+
+                while (true)
+                {
+                    if (string.IsNullOrEmpty(componentName))
+                    {
+                        _console.Write($"{directory.Name}: ");
+                    }
+                    else
+                    {
+                        Write($"{directory.Name} [<*>{componentName}<*>]> ", ConsoleColor.Green);
+                    }
+
+                    var name = ReadLine(componentName, ConsoleColor.Green);
+
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        break;
+                    }
+
+                    if (!config.Components.Any(c => string.Equals(c.Name, name, StringComparison.CurrentCultureIgnoreCase)))
+                    {
+                        _console.WriteLine(strings.INVALID_COMPONENT);
+                        continue;
+                    }
+
+                    foreach (var component in config.Components)
+                    {
+                        if (string.Equals(component.Name, name, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            component.Directories.Add(directory.Name);
+                        }
+                        else
+                        {
+                            component.Directories.Remove(directory.Name);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        private void AddAdditionalComponents(GitComponentVersionFile config, string dir)
+        {
+            while (true)
             {
                 _console.WriteLine(strings.PRESS_ENTER_TO_FINISH);
                 _console.WriteLine();
 
-                _console.WriteLine(strings.WHAT_IS_THE_COMPONENT_NAME);
+                _console.WriteLine(strings.ENTER_COMPONENT_NAME);
                 _console.Write("> ");
                 var name = ReadLine(string.Empty, ConsoleColor.Green);
 
@@ -100,76 +198,63 @@ namespace GitComponentVersion.Commands
 
                 _console.WriteLine(strings.ADD_ANOTHER);
             }
+        }
 
-            if (!config.Components.Any())
-            {
-                _console.WriteLine(strings.OK_GOOD_BYE);
-                return ReturnCode.Success;
-            }
+        private void AddSuggestedDirectories(GitComponentVersionFile config, string dir)
+        {
+            var suggested = SuggestComponentDirectories(config, dir);
 
-            _console.WriteLine(strings.OK_NOW_ASSIGN_FOLDERS_TO_COMPONENTS);
-            _console.WriteLine(strings.PRESS_ENTER_TO_FINISH);
-            _console.WriteLine();
-            foreach (var directory in _fileSystem.Directory.GetDirectories(_options.Directory))
+            foreach (var suggestedDir in suggested)
             {
-                var dirName = _fileSystem.Path.GetFileName(directory);
-                if (dirName == ".git")
+                _console.WriteLine("Is this a component?");
+                Write($"{suggestedDir} [<*>Y/n<*>]> ", ConsoleColor.Green);
+                var answer = ReadLine("Y", ConsoleColor.Green);
+
+                if (string.Equals(answer, "y", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    continue;
+                    var dirName = _fileSystem.Path.GetFileName(suggestedDir);
+                    _console.WriteLine(strings.ENTER_COMPONENT_NAME);
+                    Write($"[<*>{dirName}<*>]> ", ConsoleColor.Green);
+                    var name = ReadLine(dirName, ConsoleColor.Green);
+
+                    _console.WriteLine(strings.WHAT_IS_THE_COMPONENT_VERSION);
+                    Write("[<*>0.1.0<*>]>", ConsoleColor.Green);
+                    var next = ReadLine("0.1.0", ConsoleColor.Green);
+
+                    _console.WriteLine(strings.WHAT_IS_THE_COMPONENT_PRE_RELEASE_TAG);
+                    Write("[<*>alpha<*>]>", ConsoleColor.Green);
+                    var tag = ReadLine("alpha", ConsoleColor.Green);
+
+                    config.Components.Add(new Component()
+                    {
+                        Name = name,
+                        Next = next,
+                        Tag = tag,
+                        Directories = { suggestedDir },
+                        AssemblyInfoFiles = { "AssemblyInfo.cs" }
+                    });
+
+                    WriteLine($"<*>Adding the '{suggestedDir}' component<*>", ConsoleColor.Green);
                 }
 
-                var componentName = (
-                    from c in config.Components
-                    where c.Directories.Contains(dirName)
-                    select c.Name).FirstOrDefault() ?? string.Empty;
-
-                while (true)
-                {
-                    if (string.IsNullOrEmpty(componentName))
-                    {
-                        _console.Write($"{dirName}: ");
-                    }
-                    else
-                    {
-                        Write($"{dirName} [<*>{componentName}<*>]> ", ConsoleColor.Green);
-                    }
-
-                    var name = ReadLine(componentName, ConsoleColor.Green);
-
-                    if (string.IsNullOrEmpty(name))
-                    {
-                        break;
-                    }
-
-                    if (!config.Components.Any(c => string.Equals(c.Name, name, StringComparison.CurrentCultureIgnoreCase)))
-                    {
-                        _console.WriteLine(strings.INVALID_COMPONENT);
-                        continue;
-                    }
-
-                    foreach (var component in config.Components)
-                    {
-                        if (string.Equals(component.Name, name, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            component.Directories.Add(dirName);
-                        }
-                        else
-                        {
-                            component.Directories.Remove(dirName);
-                        }
-                    }
-                    break;
-                }
             }
+        }
 
-            var path = _fileSystem.Path.Combine(dir, "GitComponentVersion.json");
+        private List<string> SuggestComponentDirectories(GitComponentVersionFile config, string directory)
+        {
+            var uri = new Uri(directory + "/");
+            var info = _fileSystem.DirectoryInfo.FromDirectoryName(directory);
 
-            _fileSystem.File.WriteAllText(path, config.ToString());
+            var query =
+                from d in info.GetDirectories("*", SearchOption.AllDirectories)
+                where d.GetFiles("*.csproj").Any()
+                let path = new Uri(d.Parent.FullName + "/")
+                select uri.MakeRelativeUri(path).ToString().TrimEnd('/');
 
-            _console.WriteLine();
-            _console.WriteLine(strings.YOUR_CHANGES_WERE_WRITTEN_TO, path);
-
-            return ReturnCode.Success;
+            return query
+                .Distinct()
+                .Where(d => !string.IsNullOrEmpty(d) && !config.Components.Any(c => c.Directories.Contains(d)))
+                .ToList();
         }
 
         private void WriteLine(string format, ConsoleColor color)
